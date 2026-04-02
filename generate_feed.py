@@ -32,20 +32,22 @@ def matches_keywords(text: str) -> bool:
 def is_reuters_article_url(url: str) -> bool:
     if not url.startswith("https://www.reuters.com/"):
         return False
-    banned = [
-        "/world/",
-        "/business/",
-        "/markets/",
-        "/legal/",
-        "/sustainability/",
-        "/graphics/",
-        "/pictures/",
-        "/authors/",
-        "/tags/",
-    ]
-    return "/article/" in url or "/companies/" in url or (
-        url.count("/") >= 4 and not any(url.rstrip("/").endswith(x.rstrip("/")) for x in banned)
-    )
+    banned_exact = {
+        "https://www.reuters.com/world/",
+        "https://www.reuters.com/business/",
+        "https://www.reuters.com/markets/",
+        "https://www.reuters.com/legal/",
+        "https://www.reuters.com/sustainability/",
+        "https://www.reuters.com/graphics/",
+        "https://www.reuters.com/pictures/",
+        "https://www.reuters.com/tags/",
+    }
+    if url in banned_exact:
+        return False
+    if "/article/" in url:
+        return True
+    path = url.replace("https://www.reuters.com", "")
+    return path.count("/") >= 2 and not path.endswith("/")
 
 
 
@@ -123,15 +125,14 @@ def build_feed():
                     print(f"Found {len(links)} candidate links on {source_url}")
 
                     for url in links[:40]:
-                        if url in seen_articles:
-                            continue
+                        if url in seen_articles:[12:49 PM]continue
 
                         item = fetch_article_metadata(browser, url)
                         if not item:
                             continue
 
                         blob = f"{item['title']} {item['description']}"
-[12:47 PM]if not matches_keywords(blob):
+                        if not matches_keywords(blob):
                             continue
 
                         print(f"Matched: {item['title']}")
