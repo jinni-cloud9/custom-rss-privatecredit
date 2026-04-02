@@ -3,9 +3,9 @@ from feedgen.feed import FeedGenerator
 from datetime import datetime, timezone
 
 SOURCE_PAGES = [
-    "https://www.reuters.com/tags/mergers-acquisitions/",
-    "https://www.reuters.com/business/",
-    "https://www.reuters.com/markets/",
+"https://www.reuters.com/tags/mergers-acquisitions/",
+"https://www.reuters.com/business/",
+"https://www.reuters.com/markets/",
 ]
 
 KEYWORDS = [
