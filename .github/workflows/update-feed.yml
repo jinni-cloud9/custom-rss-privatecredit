@@ -1,10 +1,9 @@
-yaml id="77513"
 name: Update Reuters RSS Feed
 
 on:
   workflow_dispatch:
   schedule:
-    • cron: "_/30 _ _ _ *"
+    - cron: "*/30 * * * *"
 
 permissions:
   contents: write
@@ -14,24 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      • name: Check out repo
+      - name: Check out repo
         uses: actions/checkout@v4
 
-      • name: Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      • name: Install Python packages
-        run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      • name: Install Playwright browser
-        run: python -m playwright install chromium
+      - name: Install Playwright and Chromium
+        run: |
+          python -m playwright install --with-deps chromium
 
-      • name: Generate RSS feed
+      - name: Generate RSS feed
         run: python generate_feed.py
 
-      • name: Commit updated RSS
+      - name: Verify RSS file exists
+        run: |
+          ls -l
+          test -f reuters_filtered.xml
+
+      - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
