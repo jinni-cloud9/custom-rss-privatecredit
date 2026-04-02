@@ -1,33 +1,50 @@
-from playwright.sync_api import sync_playwright
-from feedgen.feed import FeedGenerator
+name: Update Reuters RSS Feed
 
-OUTPUT_FILE = "reuters_filtered.xml"
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
 
-def build_feed():
-    fg = FeedGenerator()
-    fg.title("Reuters feed test")
-    fg.link(href="https://www.reuters.com/")
-    fg.description("Reuters feed test")
-    fg.language("en")
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto("https://www.reuters.com/business/", wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(5000)
+permissions:
+  contents: write
 
-        title = page.title()
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-        fe = fg.add_entry()
-        fe.id("https://www.reuters.com/business/")
-        fe.title(title)
-        fe.link(href="https://www.reuters.com/business/")
-        fe.description("Business page title fetched by Playwright")
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
 
-        browser.close()
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    fg.rss_file(OUTPUT_FILE)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-if __name__ == "__main__":
-    build_feed()
-    print("Wrote reuters_filtered.xml")
+      - name: Install Playwright and Chromium
+        run: |
+          python -m playwright install --with-deps chromium
+
+      - name: Generate RSS feed
+        run: python generate_feed.py
+
+      - name: Verify RSS file exists
+        run: |
+          ls -l
+          test -f reuters_filtered.xml
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reuters_filtered.xml
+          git diff --staged --quiet || git commit -m "Update Reuters RSS feed"
+          git push
