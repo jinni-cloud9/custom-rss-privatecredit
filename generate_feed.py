@@ -5,9 +5,9 @@ OUTPUT_FILE = "reuters_filtered.xml"
 
 def build_feed():
     fg = FeedGenerator()
-    fg.title("Reuters link test")
+    fg.title("Reuters link debug")
     fg.link(href="https://www.reuters.com/")
-    fg.description("Reuters link test")
+    fg.description("Reuters link debug")
     fg.language("en")
 
     with sync_playwright() as p:
@@ -19,6 +19,10 @@ def build_feed():
         links = page.locator("a").evaluate_all(
             """els => els.map(a => a.href).filter(Boolean)"""
         )
+
+        print(f"Total raw links found: {len(links)}")
+        for href in links[:20]:
+            print(href)
 
         count = 0
         seen = set()
@@ -41,6 +45,7 @@ def build_feed():
             if count >= 10:
                 break
 
+        print(f"Filtered Reuters links added: {count}")
         browser.close()
 
     fg.rss_file(OUTPUT_FILE)
