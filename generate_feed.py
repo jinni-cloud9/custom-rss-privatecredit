@@ -58,7 +58,6 @@ def get_subhead(item, topic, author):
     if desc:
         parts = [p.strip() for p in desc.split(" - ") if p.strip()]
         if len(parts) >= 2:
-            source_part = parts[-1]
             summary_part = " - ".join(parts[:-1]).strip()
             if summary_part and summary_part.lower() != "reuters":
                 if author:
