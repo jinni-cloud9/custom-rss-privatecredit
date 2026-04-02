@@ -9,10 +9,10 @@ SOURCE_PAGES = [
 ]
 
 KEYWORDS = [
-    "merger", "acquisition", "buyout", "take-private", "take private", "m&a",
-    "restructuring", "chapter 11", "bankruptcy", "distressed",
-    "liability management", "debt exchange",
-    "private credit", "direct lending", "private debt", "private lender", "non-bank lender",
+"merger", "acquisition", "buyout", "take-private", "take private", "m&a", 
+"restructuring", "chapter 11", "bankruptcy", "distressed", "liability management", 
+"debt exchange", "private credit", "direct lending", "private debt", "private lender", 
+"non-bank lender",
 ]
 
 OUTPUT_FILE = "reuters_filtered.xml"
